@@ -1,0 +1,17 @@
+{
+  "name": "head-soccer-2d",
+  "version": "1.0.8",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "webpack",
+    "start": "npm run build && live-server --port=8000"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^2.11.0",
+    "webpack": "^3.4.1",
+    "raw-loader": "^0.5.1"
+  },
+  "dependencies": {
+    "phaser": "^3.2.0"
+  }
+}
