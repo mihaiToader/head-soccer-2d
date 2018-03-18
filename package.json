@@ -1,6 +1,7 @@
 {
   "name": "head-soccer-2d",
-  "version": "1.0.8",
+  "version": "1.0.0",
+  "description": "2d game",
   "main": "src/index.js",
   "scripts": {
     "build": "webpack",
@@ -12,6 +13,7 @@
     "raw-loader": "^0.5.1"
   },
   "dependencies": {
+    "path": "^0.12.7",
     "phaser": "^3.2.0"
   }
 }
