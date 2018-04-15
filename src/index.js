@@ -34,7 +34,7 @@ function preload ()
 {
     this.load.image('sky', 'assets/back.jpg');
     this.load.image('ground', 'assets/platform.png');
-    this.load.image('ball', 'assets/evil_ball.png');
+    this.load.image('ball', 'assets/ball.png');
     this.load.spritesheet('cat', 'assets/cat.png', { frameWidth: 24, frameHeight: 22 });
     this.load.spritesheet('dog', 'assets/dog.png', { frameWidth: 24, frameHeight: 19 });
 }
@@ -49,12 +49,13 @@ function create ()
 
     //  Here we create the ground.
     //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-    // platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+    platforms.create(400, 620, 'ground').setScale(2).refreshBody();
 
     // The player and its settings
     cat = this.physics.add.sprite(700, 450, 'cat');
     dog = this.physics.add.sprite(100, 450, 'dog');
     ball = this.physics.add.sprite(400, 300, 'ball' );
+
     //  Player physics properties. Give the little guy a slight bounce.
     cat.setBounce(0.2);
     cat.setCollideWorldBounds(true);
@@ -64,8 +65,9 @@ function create ()
 
     ball.setBounce(0.4);
     ball.setCollideWorldBounds(true);
-    ball.body.setCircle(31);
+    ball.body.setCircle(8);
     //  Our player animations, turning, walking left and walking right.
+
     this.anims.create({
         key: 'cat-left',
         frames: this.anims.generateFrameNumbers('cat', { start: 0, end: 3 }),
@@ -107,12 +109,30 @@ function create ()
     });
 
     //  Input Events
-    controlsCat = this.input.keyboard.createCursorKeys();
+    controlsCat = {
+        up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP),
+        down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN),
+        left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT),
+        right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT),
+        hitUp: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.O),
+        hit2: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P),
+        hit3: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.OPEN_BRACKET),
+        hitStraight: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.CLOSED_BRACKET),
+        hitHard: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ZERO),
+        respwan: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.BACKSPACE)
+    };
+
     controlsDog = {
         up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
         down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
         left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
         right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
+        hitUp: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.V),
+        hit2: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B),
+        hit3: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N),
+        hitStraight: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M),
+        hitHard: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT),
+        respwan: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TAB)
     };
 
     //  The score
@@ -128,11 +148,112 @@ function create ()
 
     this.physics.add.collider(cat, ball, hitBall, null, this);
     this.physics.add.collider(dog, ball, hitBall, null, this);
+
 }
 
 function hitBall(player, ball) 
 {
+    hitBallForBothPlayers(controlsCat, player, ball, 'cat');
+    hitBallForBothPlayers(controlsDog, player, ball, 'dog');
 }
+
+function hitBallForBothPlayers(controls, player, ball, type)
+{
+    //hit hard
+    if ((controlsCat.hitUp.isDown && player.texture.key === 'cat') || (controlsDog.hitUp.isDown && player.texture.key === 'dog'))
+    {
+        if ((controlsCat.hitHard.isDown && player.texture.key === 'cat') || (controlsDog.hitHard.isDown && player.texture.key === 'dog'))
+        {
+            ball.setVelocity(0, -850);
+        }
+        else
+        {
+            ball.setVelocity(0, -400);
+        }
+    }
+
+    //hit2
+    if ((controlsCat.hit2.isDown && player.texture.key === 'cat') || (controlsDog.hit2.isDown && player.texture.key === 'dog'))
+    {
+        if (player.x < ball.x)
+        {
+            if ((controlsCat.hitHard.isDown && player.texture.key === 'cat') || (controlsDog.hitHard.isDown && player.texture.key === 'dog'))
+            {
+                ball.setVelocity(800, -600);
+            }
+            else
+            {
+                ball.setVelocity(400, -500);
+            }
+        }
+        if (player.x > ball.x)
+        {
+            if ((controlsCat.hitHard.isDown && player.texture.key === 'cat') || (controlsDog.hitHard.isDown && player.texture.key === 'dog'))
+            {
+                ball.setVelocity(-800, -600);
+            }
+            else
+            {
+                ball.setVelocity(400, -500);
+            }
+        }
+    }
+
+    //hit3
+    if ((controlsCat.hit3.isDown && player.texture.key === 'cat') || (controlsDog.hit3.isDown && player.texture.key === 'dog'))
+    {
+        if (player.x < ball.x)
+        {
+            if ((controlsCat.hitHard.isDown && player.texture.key === 'cat') || (controlsDog.hitHard.isDown && player.texture.key === 'dog'))
+            {
+                ball.setVelocity(800, -300);
+            }
+            else
+            {
+                ball.setVelocity(400, -200);
+            }
+        }
+        if (player.x > ball.x)
+        {
+            if ((controlsCat.hitHard.isDown && player.texture.key === 'cat') || (controlsDog.hitHard.isDown && player.texture.key === 'dog'))
+            {
+                ball.setVelocity(-800, -300);
+            }
+            else
+            {
+                ball.setVelocity(400, -200);
+            }
+        }
+    }
+
+    //hit straight
+    if ((controlsCat.hitStraight.isDown && player.texture.key === 'cat') || (controlsDog.hitStraight.isDown && player.texture.key === 'dog'))
+    {
+        if (player.x < ball.x)
+        {
+            if ((controlsCat.hitHard.isDown && player.texture.key === 'cat') || (controlsDog.hitHard.isDown && player.texture.key === 'dog'))
+            {
+                ball.setVelocity(800, 0);
+            }
+            else
+            {
+                ball.setVelocity(400, 0);
+            }
+        }
+        if (player.x > ball.x)
+        {
+            if ((controlsCat.hitHard.isDown && player.texture.key === 'cat') || (controlsDog.hitHard.isDown && player.texture.key === 'dog'))
+            {
+                ball.setVelocity(-800, 0);
+            }
+            else
+            {
+                ball.setVelocity(400, 0);
+            }
+        }
+    }
+}
+
 
 function update ()
 {
@@ -162,7 +283,13 @@ function update ()
 
     if (controlsCat.up.isDown && cat.body.touching.down)
     {
-        cat.setVelocityY(-330);
+        cat.setVelocityY(-200);
+    }
+
+    if (controlsCat.respwan.isDown)
+    {
+        cat.x = 750;
+        cat.y = 400;
     }
 
     if (controlsDog.left.isDown)
@@ -186,7 +313,13 @@ function update ()
 
     if (controlsDog.up.isDown && dog.body.touching.down)
     {
-        dog.setVelocityY(-330);
+        dog.setVelocityY(-200);
+    }
+
+    if (controlsDog.respwan.isDown)
+    {
+        dog.x = 100;
+        dog.y = 400;
     }
 }
 
