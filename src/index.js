@@ -21,9 +21,14 @@ let config = {
 let cat;
 let dog;
 let platforms;
+let gate1;
+let gate2;
+let cloud2;
+let cloud3;
 let controlsCat;
 let controlsDog;
-let score = 0;
+let scoreDog = 0;
+let scoreCat = 0;
 let gameOver = false;
 let scoreText;
 let ball;
@@ -35,6 +40,10 @@ function preload ()
     this.load.image('sky', 'assets/back.jpg');
     this.load.image('ground', 'assets/platform.png');
     this.load.image('ball', 'assets/ball.png');
+    this.load.image('gate1', 'assets/gate.png');
+    this.load.image('gate2', 'assets/gate.png');
+    this.load.image('cloud2', 'assets/cloud2.png');
+    this.load.image('cloud3', 'assets/cloud3.png');
     this.load.spritesheet('cat', 'assets/cat.png', { frameWidth: 24, frameHeight: 22 });
     this.load.spritesheet('dog', 'assets/dog.png', { frameWidth: 24, frameHeight: 19 });
 }
@@ -46,10 +55,21 @@ function create ()
 
     //  The platforms group contains the ground and the 2 ledges we can jump on
     platforms = this.physics.add.staticGroup();
+    gate1 = this.physics.add.staticGroup();
+    gate2 = this.physics.add.staticGroup();
+    cloud2 = this.physics.add.staticGroup();
+    cloud3 = this.physics.add.staticGroup();
 
     //  Here we create the ground.
     //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
     platforms.create(400, 620, 'ground').setScale(2).refreshBody();
+
+    gate1.create(20, 535, 'gate1').refreshBody();
+
+    gate2.create(780, 535, 'gate2').refreshBody();
+
+    cloud2.create(640, 200, 'cloud2').refreshBody();
+    cloud3.create(220, 200, 'cloud2').refreshBody();
 
     // The player and its settings
     cat = this.physics.add.sprite(700, 450, 'cat');
@@ -118,7 +138,7 @@ function create ()
         hit2: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P),
         hit3: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.OPEN_BRACKET),
         hitStraight: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.CLOSED_BRACKET),
-        hitHard: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ZERO),
+        hitHard: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.QUOTES),
         respwan: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.BACKSPACE)
     };
 
@@ -132,16 +152,33 @@ function create ()
         hit3: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N),
         hitStraight: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M),
         hitHard: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT),
-        respwan: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TAB)
+        respwan: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TAB),
+        respwanBall: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SEVEN)
     };
 
     //  The score
-    scoreText = this.add.text(16, 16, 'score 0:0', { fontSize: '32px', fill: '#000' });
+    scoreText = this.add.text(16, 16, 'Dog vs Cat 0 : 0', { fontSize: '32px', fill: '#000' });
 
     //  Collide the player and the stars with the platforms
     this.physics.add.collider(cat, platforms);
     this.physics.add.collider(dog, platforms);
     this.physics.add.collider(ball, platforms);
+
+    this.physics.add.collider(cat, cloud2);
+    this.physics.add.collider(dog, cloud2);
+    this.physics.add.collider(ball, cloud2);
+
+    this.physics.add.collider(cat, cloud3);
+    this.physics.add.collider(dog, cloud3);
+    this.physics.add.collider(ball, cloud3);
+
+    this.physics.add.collider(cat, gate1);
+    this.physics.add.collider(dog, gate1);
+    this.physics.add.collider(cat, gate2);
+    this.physics.add.collider(dog, gate2);
+
+    this.physics.add.collider(ball, gate1, goal, null, this);
+    this.physics.add.collider(ball, gate2, goal, null, this);
 
     this.physics.add.collider(cat, dog);
     this.physics.add.collider(dog, cat);
@@ -149,6 +186,32 @@ function create ()
     this.physics.add.collider(cat, ball, hitBall, null, this);
     this.physics.add.collider(dog, ball, hitBall, null, this);
 
+
+
+}
+
+function goal(ball, gate)
+{
+    if (gate.texture.key === 'gate1') {
+        scoreCat++;
+    }
+    if (gate.texture.key === 'gate2') {
+        scoreDog++;
+    }
+    resetObjects();
+    console.log(scoreDog, ":", scoreCat);
+    scoreText.setText("Dog vs Cat " + scoreDog + ":" + scoreCat);
+    if (scoreCat === 7) {
+        scoreText.setText("Cat won!");
+        setTimeout(function () {scoreText.setText("Dog vs Cat 0 : 0")}, 2000);
+        scoreCat = 0;
+        scoreDog = 0;
+    } else if (scoreDog === 7) {
+        scoreText.setText("Dog won!");
+        setTimeout(function () {scoreText.setText("Dog vs Cat 0 : 0")}, 2000);
+        scoreCat = 0;
+        scoreDog = 0;
+    }
 }
 
 function hitBall(player, ball) 
@@ -194,7 +257,7 @@ function hitBallForBothPlayers(controls, player, ball, type)
             }
             else
             {
-                ball.setVelocity(400, -500);
+                ball.setVelocity(-400, -500);
             }
         }
     }
@@ -221,7 +284,7 @@ function hitBallForBothPlayers(controls, player, ball, type)
             }
             else
             {
-                ball.setVelocity(400, -200);
+                ball.setVelocity(-400, -200);
             }
         }
     }
@@ -248,7 +311,7 @@ function hitBallForBothPlayers(controls, player, ball, type)
             }
             else
             {
-                ball.setVelocity(400, 0);
+                ball.setVelocity(-400, 0);
             }
         }
     }
@@ -321,5 +384,27 @@ function update ()
         dog.x = 100;
         dog.y = 400;
     }
+
+    if (controlsDog.respwanBall.isDown)
+    {
+        ball.x = 400;
+        ball.y = 300;
+    }
+}
+
+function resetObjects()
+{
+    dog.x = 100;
+    dog.y = 400;
+
+    ball.x = 400;
+    ball.y = 300;
+
+    cat.x = 750;
+    cat.y = 400;
+
+    dog.setVelocity(0, 0);
+    ball.setVelocity(0, 0);
+    cat.setVelocity(0, 0);
 }
 
