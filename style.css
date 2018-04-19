@@ -1,0 +1,13 @@
+canvas {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5%;
+    display: block;
+}
+
+body {
+    background-size: cover;
+    background: url("assets/wallpaper.jpg") no-repeat;
+}
