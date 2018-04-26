@@ -341,12 +341,12 @@ let playScene = {
         }
 
         if (controlsCat.left.isDown) {
-            cat.setVelocityX(-160);
+            cat.setVelocityX(-200);
 
             cat.anims.play('cat-left', true);
         }
         else if (controlsCat.right.isDown) {
-            cat.setVelocityX(160);
+            cat.setVelocityX(200);
 
             cat.anims.play('cat-right', true);
         }
@@ -366,12 +366,12 @@ let playScene = {
         }
 
         if (controlsDog.left.isDown) {
-            dog.setVelocityX(-160);
+            dog.setVelocityX(-200);
 
             dog.anims.play('dog-left', true);
         }
         else if (controlsDog.right.isDown) {
-            dog.setVelocityX(160);
+            dog.setVelocityX(200);
 
             dog.anims.play('dog-right', true);
         }
